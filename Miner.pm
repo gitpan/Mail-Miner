@@ -15,7 +15,7 @@ use MIME::Parser;
 
 #our @EXPORT_OK = ( );
 #our @EXPORT = qw( );
-our $VERSION = '2.1';
+our $VERSION = '2.2';
 
 # Find all Mail::Miner::Recogniser modules
 use File::Spec::Functions qw(:DEFAULT splitdir);
