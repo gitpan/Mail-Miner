@@ -1,3 +1,29 @@
+2003-01-01 18:17  simon
+
+	* Changes, Makefile.PL, Miner.pm, miner.sql, mm, mm_process,
+	test-message, Audit/Miner.pm, Miner/Asset.pm, Miner/Attachment.pm,
+	Miner/Config.pm, Miner/DBI.pm, Miner/Mail.pm,
+	Miner/Recogniser/Address.pm, Miner/Recogniser/Date.pm,
+	Miner/Recogniser/Keywords.pm, Miner/Recogniser/Phone.pm,
+	t/assets.t, t/mail-box.t: This is 2.1.
+
+2003-01-01 18:17  simon
+
+	* MANIFEST: Add missing files.
+
+2003-01-01 18:17  simon
+
+	* README: Correct documentation bug.
+
+2002-12-31 13:38  simon
+
+	* Changes, MANIFEST, Makefile.PL, Miner.pm, README, miner.sql, mm,
+	mm_process, test-message, Audit/Miner.pm, Miner/Asset.pm,
+	Miner/Attachment.pm, Miner/Config.pm, Miner/DBI.pm, Miner/Mail.pm,
+	Miner/Recogniser/Address.pm, Miner/Recogniser/Date.pm,
+	Miner/Recogniser/Keywords.pm, Miner/Recogniser/Phone.pm,
+	t/assets.t, t/mail-box.t: This is 2.0.
+
 2002-12-31 13:37  simon
 
 	* Makefile.PL, Miner.pm, Miner/Config.pm, Miner/DBI.pm: Final

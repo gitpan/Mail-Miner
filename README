@@ -1,5 +1,5 @@
-Mail::Miner version 2.0
-==========================
+Mail::Miner version 2.1
+=======================
 
 If you install Mail::Miner and set it up so that mail is routed through
 Mail::Audit::Miner (see the documentation) or piped through mm_process,
@@ -14,7 +14,7 @@ INSTALLATION
 
 You will need mysql installed.
 
-To install this module, create a new Postgres database according to the
+To install this module, create a new mysql database according to the
 schema in miner.sql, and give yourself access to it. Then type the following:
 
    perl Makefile.PL

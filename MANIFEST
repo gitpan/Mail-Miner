@@ -2,6 +2,7 @@ Audit/Miner.pm
 Changes
 Makefile.PL
 MANIFEST
+SIGNATURE
 Miner/Asset.pm
 Miner/Attachment.pm
 Miner/Config.pm
@@ -14,6 +15,7 @@ Miner/Recogniser/Keywords.pm
 Miner/Recogniser/Phone.pm
 miner.sql
 mm
+mm_process
 README
 t/assets.t
 test-message
