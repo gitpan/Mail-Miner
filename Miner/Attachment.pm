@@ -1,6 +1,10 @@
+
 package Mail::Miner::Attachment;
-use Mail::Miner::DBI;
-use MIME::Base64;
+use base 'Mail::Miner::DBI';
+__PACKAGE__->set_up_table("attachments");
+
+1;
+package Mail::Miner::Attachments;
 use strict;
 use Exporter;
 use Mail::Address;
@@ -29,29 +33,32 @@ user to how to extract the attachments.
 
 =cut
 
-my %ok_parts = map { $_ => 1 } (
-    "text/plain",
-    "multipart/alternative"
-);
+my %ok_parts = map { $_ => 1 } ( "text/plain", "multipart/alternative");
 
 sub detach_attachments {
+    my $object = shift;
     my $entity = shift;
     my @body;
-    my $msgid = shift;
     my $content;
 
+    $entity->make_multipart;
     for ($entity->parts) {
         my $fn = $_->head->recommended_filename;
         if (exists($ok_parts{$_->mime_type})  and !$fn) {
             $content = $_ unless $content;
             push @body, @{$_->body};
         } else {
-            my $ct = $_->mime_type;
-            my $id = store_attachment($_, $msgid);
-            return $entity unless $id; # Just in case
+            my $att = $_->mime_type;
+            my $add = $object->add_to_attachments(
+         filename => $fn,
+         contenttype => $_->mime_type,
+         encoding => ($_->bodyhandle && $_->bodyhandle->as_string)
+            );
+
+            return $entity unless $add->id; # Just in case
             push @body, "\n", 
-                "[ $ct attachment $fn detached - use \n",
-                "\tmm --detach $id\n",
+                "[ ".$entity->mime_type." attachment $fn detached - use \n",
+                "\tmm --detach ".$att->id."\n",
                 " to recover ]\n";
         }
     }
@@ -73,26 +80,6 @@ sub detach_attachments {
     return $entity;
 }
 
-sub store_attachment {
-    my ($entity, $id) = @_;
-    my $stuff = $entity->bodyhandle && $entity->bodyhandle->as_string;
-    my $encoding = "raw";
-    if ($stuff =~/\0/) {
-        $encoding = "base64";
-        $stuff = encode_base64($stuff);
-    }
-    return Insert(
-     "INSERT INTO attachments ( message_id, filename, contenttype, attachment,encoding)
-        values (?,?,?,?,?)",
-     $id,
-     $entity->head->recommended_filename,
-     $entity->mime_type,
-     $stuff,
-     $encoding
-     
-    );
-}
-
 =head2 C<detach>
 
     detach($msgid)
@@ -105,40 +92,28 @@ directory, interactively.
 
 sub detach {
     my $id = shift;
+    my $obj = Mail::Miner::Attachment->fetch($id);
 
-    my $sth = dbh->prepare("
-        SELECT a.encoding, a.filename, a.attachment, a.contenttype, m.from_address
-        FROM attachments a, messages m
-        WHERE a.id = ? 
-          AND a.message_id = m.id
-    ");
-    $sth->execute($id);
-    if (!$sth->rows) {
-        print "Attachment $id not found\n";
-        return;
-    }
-    my $a;
+    die "Couldn't find that attachment!\n" unless $obj;
+
     my $first=0;
-    while ($a = $sth->fetchrow_hashref()) {
-        my $filename = $a->{filename} ||
-                       _gen_filename($a->{contenttype});
- 
-        my $from = _namefrom(Mail::Address->parse($a->{from_address}));
-        print "Detaching $filename (".$a->{contenttype}.") sent by $from...\n";
-        
-        if (-e $filename) {
-            print "\n! $filename already exists. Replace? (y/N)\n";
-            my $foo = <STDIN>;
-            if ($foo !~ /^y/i) {
-                print "OK, skipping...\n";
-                next;
+    my $filename = $a->filename ||
+                   _gen_filename($a->contenttype);
+
+    my $from = _namefrom(Mail::Address->parse($a->from_address));
+    print "Detaching $filename (".$a->contenttype.") sent by $from...\n";
+    
+    if (-e $filename) {
+        print "\n! $filename already exists. Replace? (y/N)\n";
+        my $foo = <STDIN>;
+        if ($foo !~ /^y/i) {
+            print "OK, skipping...\n";
+            next;
             }
         }
         open (OUT, ">", $filename) or do {warn "! $filename: $!\n"; next;};
-        print OUT $a->{encoding} eq "base64" ? decode_base64($a->{attachment})
-                  : $a->{attachment};
+        print OUT $a->attachment;
         close OUT;
-    }
 }
 
 sub _gen_filename {

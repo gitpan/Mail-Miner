@@ -3,26 +3,25 @@ package Mail::Miner;
 use 5.006;
 use strict;
 use warnings;
-our $VERSION = "1.01";
+use Carp;
 
-use Mail::Miner::Message;
+#require Exporter;
+use Mail::Miner::DBI;
 use Mail::Miner::Attachment;
-use Mail::Miner::Assets;
+use Mail::Miner::Asset;
+use Mail::Miner::Mail;
 
-our %allowed_options;
+use MIME::Parser;
 
-$allowed_options{sender}{type}="=s";
-$allowed_options{sender}{help}="Alias for --from";
-$allowed_options{from}{type}="=s";
-$allowed_options{from}{help}="Match messages from a given sender";
-$allowed_options{id}{type}="=i";
-$allowed_options{id}{help}="Match message id i";
+#our @EXPORT_OK = ( );
+#our @EXPORT = qw( );
+our $VERSION = '2.0';
 
 # Find all Mail::Miner::Recogniser modules
 use File::Spec::Functions qw(:DEFAULT splitdir);
 
 my @files = map { glob(catfile($_,"*.pm")) }
-           grep { -d $_ } 
+           grep { -d $_ }
             map { catdir($_, "Mail", "Miner", "Recogniser") }
             exists $INC{"blib.pm"} ? grep {/blib/} @INC : @INC;
 
@@ -30,11 +29,18 @@ require $_ for @files; # No need for import.
 
 no warnings 'once';
 
-our @modules = map { 
+our @modules = map {
     s/.pm$//;
     s{.*(?=Mail/Miner)}{};
     join "::", splitdir($_)
 } @files;
+
+our %plugins = map { $Mail::Miner::recognisers{$_}{keyword} => $_ } 
+             keys %Mail::Miner::recognisers;
+
+our $parser = new MIME::Parser;
+$parser->output_to_core(1);
+# Preloaded methods go here.
 
 1;
 
@@ -132,10 +138,9 @@ will dump F<foo.jpg> into your current directory.)
 
 Next, C<process> loads up all the C<Mail::Miner::*> modules it can find
 in the Perl module search path, and calls their C<process> subroutine
-too, if one exists. This allows them to call the various
-C<Mail::Miner::Assets> routines to store their assets. After this, the
-final message, possibly modified by the various C<process> subroutines, 
-gets written out for delivery.
+too, if one exists. This allows them to locate and store any assets they
+consider important. After this, the final message, possibly modified by
+the various C<process> subroutines, gets written out for delivery.
 
 Here endeth the processing phase.
 
@@ -145,19 +150,10 @@ that they can act as filters for. For instance, the
 C<Mail::Miner::Recogniser::Date> recognizer module registers that it can
 handle the C<--dated> command line option. If C<mm> sees C<--dated> on
 the command line, it'll pass the option to
-C<Mail::Miner::Recogniser::Date>'s C<toquery> subroutine, which returns
-some information about to how to create an SQL filter to find messages
-matching that date specification. 
-
-Once all the modules have submitted their SQL C<WHERE> clauses,
-C<Mail::Miner> combines them all together and executes the query. Now
-the list of candidate mails are sent back to each
-C<Mail::Miner::Recogniser> module's C<postfilter> subroutine to have
-another chance to filter based on the exact results of the search. Once
-that's done, we have a set of mails to display to the user. 
-
-Run C<mm> with no options to see the sort of queries you can do with
-your database of email.
+C<Mail::Miner::Recogniser::Date>'s C<search> subroutine, which picks out
+the messages which match the search query. If a recognizer doesn't
+register a C<search> subroutine, we look for assets belonging to that
+recognizer which match a regular expression search for the search term.
 
 That's basically how C<Mail::Miner> works. Have fun with it.
 
@@ -167,7 +163,6 @@ Simon Cozens
 
 =head1 SEE ALSO
 
-L<Mail::Audit>, L<Mail::Miner::Message>, L<Mail::Miner::Attachment>,
-L<Mail::Miner::Assets>.
+L<Mail::Audit>, L<Mail::Miner::Mail>, L<Mail::Miner::Attachment>,
+L<Mail::Miner::Asset>.
 
-=cut

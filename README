@@ -1,4 +1,4 @@
-Mail::Miner version 1.0
+Mail::Miner version 2.0
 ==========================
 
 If you install Mail::Miner and set it up so that mail is routed through
@@ -12,12 +12,7 @@ for email addresses, phone numbers, physical addresses, and so on.
 
 INSTALLATION
 
-YOU WILL NEED POSTGRES INSTALLED.
-
-* Earlier versions of M::M used Mysql; this is no longer the case, as
-Mysql is not a real RDBMS. It does not support subselects, although
-they've apparently been "coming soon" for the past few years. Postgresql
-is free and it works; please use it instead of Mysql where you can.
+You will need mysql installed.
 
 To install this module, create a new Postgres database according to the
 schema in miner.sql, and give yourself access to it. Then type the following:
@@ -40,8 +35,8 @@ This module requires these other modules and libraries:
         MIME::Parser
         Date::Manip
         Mail::Address
-        DBI
-        DBD::Pg
+        Class::DB::mysql
+        Lingua::EN::Keywords
 
 SUPPORT
 
@@ -51,6 +46,6 @@ might too.
 
 COPYRIGHT AND LICENCE
 
-Copyright (C) 2002 Simon Cozens.
+Copyright (C) 2002-2003 Simon Cozens.
 GPL & AL.
 

@@ -4,17 +4,14 @@ $VERSION = "0.01";
 
 package Mail::Audit;
 use MIME::Parser;
-use Mail::Miner::Message;
-
-my $parser = new MIME::Parser;
-$parser->output_to_core(1);
+use Mail::Miner;
 
 sub miner {
     my $self = shift;
     my $message = $self->as_string;
-    my $entity = $parser->parse_data($message);
-
-    $entity = Mail::Miner::Message::process($entity);
+    my $entity = Mail::Miner::Mail->create(
+                    $Mail::Miner::parser->parse_data($message)
+                 )->content;
     $entity->{_audit_opts} = { %{ $self->{_audit_opts} } };
     $entity->{obj} = $entity;
     return bless $entity, "Mail::Audit::MimeEntity";
