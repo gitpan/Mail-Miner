@@ -7,6 +7,7 @@ use Carp;
 
 #require Exporter;
 use Mail::Miner::Assets;
+use UNIVERSAL::require;
 
 eval {
 require Mail::Miner::DBI;
@@ -19,30 +20,34 @@ use MIME::Parser;
 
 #our @EXPORT_OK = ( );
 #our @EXPORT = qw( );
-our $VERSION = '2.6_01';
+our $VERSION = '2.7';
 our %recognisers;
 
 # Find all Mail::Miner::Recogniser modules
 use File::Spec::Functions qw(:DEFAULT splitdir);
 
 sub import { 
-    my ($class, %args) = @_;
-    my @additional_modules = ($args{recognisers});
-    @additional_modules = @{$additional_modules[0]} 
-        if ref $additional_modules[0] eq "ARRAY";
-   s/::/\//g for @additional_modules;
+    my ($class, @modules) = @_;
     local $_=$_; # Breaking $_ considered evil
+    for (@modules) {
+        eval "require $_";
+        die $@ if $@;
+    }
+    return if @modules;
 
 my @files = grep length, map { glob(catfile($_,"*.pm"))  }
             grep { -d $_ }
             map { my $path = $_;
                   catdir($path, "Mail", "Miner", "Recogniser"),
-                  map { catdir($path, $_) } @additional_modules
             }
             exists $INC{"blib.pm"} ? grep {/blib/} @INC :
             @INC;
 my %seen;
-@files = grep {!$seen{$_}++} @files;
+@files = grep {
+    my $key = $_;
+    $key =~ s|.*Mail/Miner/Recogniser||;
+     !$seen{$key}++
+    } @files;
 
 
 my @dummy = @files;
