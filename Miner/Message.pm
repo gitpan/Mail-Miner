@@ -123,12 +123,10 @@ command line.
 
 sub report {
     my %options = @_;
-    die "Full-text output not yet implemented\n" 
-        unless $options{summary};
 
     my $brief = delete $options{summary};
 
-    my $sql = "SELECT m.id, m.from_address, m.subject, m.received ";
+    my $sql = "SELECT DISTINCT m.id, m.from_address, m.subject, m.received ";
     $sql .= ", content " if !$brief;
 
     $sql .= "FROM messages m, assets a ";
@@ -136,19 +134,31 @@ sub report {
     my @clauses = ("a.message_id = m.id");
 
     my %basic = # Add additional "basic" terms here
-        ( sender => "from_address" );
+        ( sender => { field => "from_address", type => "like" },
+          from   => { field => "from_address", type => "like" },
+          id     => { field => "id", type => "numexact" } );
 
     if (%options) { 
         for (keys %basic) {
             next unless exists $options{$_};
-            push @clauses, $basic{$_}." LIKE ".dbh->quote("%".$options{$_}."%");
+            my $match = $basic{$_};
+            if ($match->{type} eq "like") {
+                push @clauses, $match->{field}. " LIKE ".dbh->quote("%".$options{$_}."%");
+            } elsif ($match->{type} eq "numexact") {
+                my $id;
+                ($id = $options{$_}) =~ s/\D//g;
+                die "Search term '$options{$_}' for field $_ should be numeric.\n" unless length $id;
+                push @clauses, $match->{field}. " = ".$id;
+            } else {
+                die "Internal urp: Bad match type for $_\n";
+            }
             delete $options{$_};
         }
         for (keys %options) {
             if (!exists $Mail::Miner::allowed_options{$_}) {
                 die "Unknown search term $_ (".(join ",", keys %Mail::Miner::allowed_options).")\n";
             }
-            my $sub = $Mail::Miner::allowed_options{$_}."::where_clause";
+            my $sub = $Mail::Miner::allowed_options{$_}{package}."::pre_filter";
             no strict 'refs';
             push @clauses, $sub->($options{$_});
         }
@@ -166,20 +176,42 @@ sub report {
         return;
     }
 
-    print $sth->rows." matched\n";
+    print $sth->rows." matched\n" if $brief;
 
-    my $ids = dbh->selectcol_arrayref("SELECT m.id FROM messages m, assets a $clause", undef, values %options);
-    my $id_width = ( sort map {length $_} @$ids )[-1];
+    my ($id_width);
+    if ($brief) {
+        my $ids = dbh->selectcol_arrayref("SELECT m.id FROM messages m, assets a $clause", undef);
+        $id_width = ( sort map {length $_} @$ids )[-1];
+    }
+
     while (my $h = $sth->fetchrow_hashref) {
         # This isn't needed normally, but I need it, so leave it alone
         # until we release.
+
+        # I can't remember why this is.
         chomp for values %$h; 
 
+        no strict 'refs';
+        if (!$brief and keys %options == 1) {
+            my ($key) = keys %options;
+            if (exists &{$Mail::Miner::allowed_options{$key}{package}."::display"}) {
+                ($Mail::Miner::allowed_options{$key}{package}."::display")->($h,
+                $options{$key});
+                next;
+            }
+        }
+        if ($brief) {
         printf "%${id_width}i:%10s:%40s:%s\n", 
             $h->{id}, 
             substr($h->{received},0,10), 
             substr($h->{from_address},-40,40), 
             substr($h->{subject},0,$ENV{COLUMNS}?$ENV{COLUMNS}-(53+$id_width):25-$id_width);
+        } else {
+            print "From mail-miner-$h->{id}\@localhost @{[scalar localtime]}\n";
+            print $h->{content};
+            print "\n\n# Mail Miner ID: $h->{id}\n\n";
+            # Makes it handy mailbox format.
+        }
     }
 
     $sth->finish;

@@ -1,5 +1,6 @@
 package Mail::Miner::Attachment;
 use Mail::Miner::DBI;
+use MIME::Base64;
 use strict;
 use Exporter;
 use Mail::Address;
@@ -47,6 +48,7 @@ sub detach_attachments {
         } else {
             my $ct = $_->mime_type;
             my $id = store_attachment($_, $msgid);
+            return $entity unless $id; # Just in case
             push @body, "\n", 
                 "[ $ct attachment $fn detached - use \n",
                 "\tmm --detach $id\n",
@@ -73,13 +75,21 @@ sub detach_attachments {
 
 sub store_attachment {
     my ($entity, $id) = @_;
+    my $stuff = $entity->bodyhandle && $entity->bodyhandle->as_string;
+    my $encoding = "raw";
+    if ($stuff =~/\0/) {
+        $encoding = "base64";
+        $stuff = encode_base64($stuff);
+    }
     return Insert(
-     "INSERT INTO attachments ( message_id, filename, contenttype, attachment)
-        values (?,?,?,?)",
+     "INSERT INTO attachments ( message_id, filename, contenttype, attachment,encoding)
+        values (?,?,?,?,?)",
      $id,
      $entity->head->recommended_filename,
      $entity->mime_type,
-     $entity->bodyhandle && $entity->bodyhandle->as_string,
+     $stuff,
+     $encoding
+     
     );
 }
 
@@ -97,7 +107,7 @@ sub detach {
     my $id = shift;
 
     my $sth = dbh->prepare("
-        SELECT a.filename, a.attachment, a.contenttype, m.from_address
+        SELECT a.encoding, a.filename, a.attachment, a.contenttype, m.from_address
         FROM attachments a, messages m
         WHERE a.id = ? 
           AND a.message_id = m.id
@@ -125,7 +135,8 @@ sub detach {
             }
         }
         open (OUT, ">", $filename) or do {warn "! $filename: $!\n"; next;};
-        print OUT $a->{attachment};
+        print OUT $a->{encoding} eq "base64" ? decode_base64($a->{attachment})
+                  : $a->{attachment};
         close OUT;
     }
 }

@@ -3,7 +3,7 @@ package Mail::Miner;
 use 5.006;
 use strict;
 use warnings;
-our $VERSION = "0.0a3";
+our $VERSION = "1.0";
 
 use Mail::Miner::Message;
 use Mail::Miner::Attachment;
@@ -11,7 +11,12 @@ use Mail::Miner::Assets;
 
 our %allowed_options;
 
-$allowed_options{sender} = "";
+$allowed_options{sender}{type}="=s";
+$allowed_options{sender}{help}="Alias for --from";
+$allowed_options{from}{type}="=s";
+$allowed_options{from}{help}="Match messages from a given sender";
+$allowed_options{id}{type}="=i";
+$allowed_options{id}{help}="Match message id i";
 
 # Find all Mail::Miner::Recogniser modules
 use File::Spec::Functions qw(:DEFAULT splitdir);
@@ -19,7 +24,7 @@ use File::Spec::Functions qw(:DEFAULT splitdir);
 my @files = map { glob(catfile($_,"*.pm")) }
            grep { -d $_ } 
             map { catdir($_, "Mail", "Miner", "Recogniser") }
-            @INC;
+            exists $INC{"blib.pm"} ? grep {/blib/} @INC : @INC;
 
 require $_ for @files; # No need for import.
 
@@ -65,9 +70,8 @@ The database schema is provided in F<miner.sql>; naturally, you'll need
 to create this database according to the schema, and give yourself
 appropriate permission to the tables. You may or may not need to alter
 the DBI connect string at the top of F<DBI.pm> too. Be warned that
-C<Mail::Miner> only supports mysql, due to there being no standard way
-of getting the ID of the last inserted row back. (I'll write
-C<DBIx::LastInsertID> sometime.)
+C<Mail::Miner> only supports Postgresql, as it's the only free database
+to offer subselects.
 
 Those were the database installation instructions. Huh.
 
@@ -152,8 +156,8 @@ C<Mail::Miner::Recogniser> module's C<postfilter> subroutine to have
 another chance to filter based on the exact results of the search. Once
 that's done, we have a set of mails to display to the user. 
 
-C<Mail::Miner::Recogniser::Date> is intended to be used as an example of
-how to construct recogniser modules.
+Run C<mm> with no options to see the sort of queries you can do with
+your database of email.
 
 That's basically how C<Mail::Miner> works. Have fun with it.
 

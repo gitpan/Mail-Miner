@@ -1,0 +1,106 @@
+2002-08-24 16:18  simon
+
+	* MANIFEST, Miner.pm, README, mm, Miner/Message.pm,
+	Miner/Recogniser/Address.pm, Miner/Recogniser/Keywords.pm,
+	Miner/Recogniser/Phone.pm: It's 1.0.
+
+2002-08-24 15:41  simon
+
+	* MANIFEST, miner.sql, Miner/Attachment.pm,
+	Miner/Recogniser/Address.pm, Miner/Recogniser/Keywords.pm,
+	Miner/Recogniser/Phone.pm: Phone number detection. Bloody hell,
+	this is clever.
+
+2002-08-24 14:52  simon
+
+	* Miner/Attachment.pm: Postgres doesn't support embedded nuls, so
+	base64 encode stuff.
+
+2002-08-24 14:32  simon
+
+	* Makefile.PL, Miner.pm, README, miner.sql, mm, Miner/DBI.pm,
+	Miner/Message.pm, Miner/Recogniser/Address.pm,
+	Miner/Recogniser/Keywords.pm: Move to Postgres, and finish off
+	address stuff.
+
+2002-08-24 13:19  simon
+
+	* MANIFEST, Miner/Message.pm, Miner/Recogniser/Address.pm: This
+	should get searching on addresses working, given a sensible RDBMS.
+
+2002-08-24 13:04  simon
+
+	* Miner/Recogniser/Keywords.pm: Whoa, ugly bug.
+
+2002-08-24 12:38  simon
+
+	* Miner/Message.pm: Now make it *really* mailbox format.
+
+2002-08-24 12:33  simon
+
+	* Miner/Message.pm: Allow non-brief mode, and export that to a
+	mailbox format.
+
+2002-08-24 12:26  simon
+
+	* Miner.pm, mm, Miner/Message.pm: Remove duplication bug, add
+	--debug option to mm, and make --id=1234 work.
+
+2002-06-16 16:11  simon
+
+	* Miner.pm, Miner/Attachment.pm: 
+	
+	Make removing attachments safe in the case of failed insert.
+
+2002-06-01 13:20  simon
+
+	* Miner/: Message.pm, Recogniser/Keywords.pm: 
+	
+	Surprise! Cartesian Join! HLAGHLAGHLAGH!
+
+2002-04-26 17:57  simon
+
+	* Miner.pm, mm, Miner/Message.pm, Miner/Recogniser/Keywords.pm: 
+	
+	*Most* of the code for making searches work, but need to work
+	around MySQL subselect brokenness.
+
+2002-04-26 16:06  simon
+
+	* miner.sql, mm_process, Miner/Message.pm: 
+	
+	This gets keywords working neatly.
+
+2002-04-26 15:57  simon
+
+	* mm, Miner/DBI.pm, Miner/Message.pm: 
+	
+	First stage of reporting.
+
+2002-04-14 23:33  simon
+
+	* Miner/DBI.pm: 
+	
+	Comment about hack.
+
+2002-04-14 12:01  simon
+
+	* Miner/Recogniser/Keywords.pm: 
+	
+	File keywords individually, if we're searching for them
+	individually with =
+
+2002-04-13 11:19  simon
+
+	* Changes, MANIFEST, Makefile.PL, Miner.pm, README, miner.sql, mm,
+	mm_process, test.pl, Audit/Miner.pm, Miner/Assets.pm,
+	Miner/Attachment.pm, Miner/DBI.pm, Miner/Message.pm,
+	Miner/Recogniser/Keywords.pm: Initial revision
+
+2002-04-13 11:19  simon
+
+	* Changes, MANIFEST, Makefile.PL, Miner.pm, README, miner.sql, mm,
+	mm_process, test.pl, Audit/Miner.pm, Miner/Assets.pm,
+	Miner/Attachment.pm, Miner/DBI.pm, Miner/Message.pm,
+	Miner/Recogniser/Keywords.pm: Imported gnat's version
+

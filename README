@@ -1,22 +1,25 @@
-Mail::Miner version 0.01a1
+Mail::Miner version 1.0
 ==========================
 
-This is an EXCEPTIONALLY early alpha of Mail::Miner, but I'm releasing
-it now, because it's immediately useful.
-
-It doesn't even handle searches properly, but it will strip attachments
-from emails, save them, and provide a means of restoring them. If you
-install Mail::Miner and set it up so that mail is routed through
+If you install Mail::Miner and set it up so that mail is routed through
 Mail::Audit::Miner (see the documentation) or piped through mm_process,
 then attachments will be replaced by instructions about how to use the
 "mm" command-line utility to detach them. You also have a handy database
 of all your email that you can prod. :)
 
+See the "mm" tool for more details of how you can search this database
+for email addresses, phone numbers, physical addresses, and so on.
+
 INSTALLATION
 
-YOU WILL NEED MYSQL INSTALLED.
+YOU WILL NEED POSTGRES INSTALLED.
 
-To install this module, create a new mysql database according to the
+* Earlier versions of M::M used Mysql; this is no longer the case, as
+Mysql is not a real RDBMS. It does not support subselects, although
+they've apparently been "coming soon" for the past few years. Postgresql
+is free and it works; please use it instead of Mysql where you can.
+
+To install this module, create a new Postgres database according to the
 schema in miner.sql, and give yourself access to it. Then type the following:
 
    perl Makefile.PL
@@ -38,16 +41,13 @@ This module requires these other modules and libraries:
         Date::Manip
         Mail::Address
         DBI
-        DBD::mysql
+        DBD::Pg
 
 SUPPORT
 
-THIS SOFTWARE IS EXTREMELY EARLY ALPHA. It probably won't eat your
-mailbox. It hasn't eaten mine. If it did, I'd release a new version. But
-it's not very featureful. That'll come in time. I don't want bug reports
-or feature requests, or even patches, just yet. Once I've got something
-that represents the complete Miner architecture, then I'll see about
-user feedback. But for now, no mail, thanks.
+This software is currently unsupported. It hasn't eaten my mailbox, but
+I don't want to say it won't eat yours. But I find it useful, and you
+might too.
 
 COPYRIGHT AND LICENCE
 

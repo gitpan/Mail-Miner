@@ -1,4 +1,4 @@
-Changes
+ChangeLog
 Makefile.PL
 MANIFEST
 Audit/Miner.pm
@@ -7,6 +7,8 @@ Miner/Attachment.pm
 Miner/DBI.pm
 Miner/Message.pm
 Miner/Recogniser/Keywords.pm
+Miner/Recogniser/Address.pm
+Miner/Recogniser/Phone.pm
 Miner.pm
 miner.sql
 mm

@@ -5,10 +5,8 @@ our @ISA = qw(Exporter);
 our @EXPORT = qw(dbh Insert);
 
 # Fucking hack.
-my $who = getpwuid $>;
-my $connection_string = "dbi:mysql:dbname=mail".($who eq "simon" && "miner");
+my $connection_string = "dbi:Pg:dbname=mailminer";
 my ($user, $auth);
-($user, $auth) = ('gnat', 'waldus') unless $who eq "simon";
 
 =head1 NAME
 
@@ -50,23 +48,35 @@ Performs an insert statement and returns the ID of the new row.
 sub Insert {
     my $sql = shift;
     my $sth = dbh->prepare($sql);
+    my $table;
+    $sql =~ /INTO (\w+)/i and $table = $1;
 
     $sth->execute(
         @_
     );
+    if ($table eq "assets") {
+        # Don't need to return a row
+        $sth->finish;
+        return;
+    }
 
-    # XXX This is horribly mysql specific. Write a DBIx module to
+    # XXX This is horribly Pg specific. Write a DBIx module to
     # abstract it. DBIx::SearchBuilder::Handle has solutions for Oracle,
     # mysql and Postgres.
-    my $id = dbh->{'mysql_insertid'};
-
-    unless ($id) {
-        my $s = dbh->selectall_arrayref('SELECT LAST_INSERT_ID()');
-        $id = $s->[0][0];
+    my $oid = $sth->{'pg_oid_status'};
+    my $sql = "SELECT id FROM $table WHERE oid = ?";
+    my $sth2 = dbh->prepare($sql);
+    $sth2->execute($oid);
+    my @row = $sth2->fetchrow;
+    unless ($row[0]) {
+        warn "Can't find $table.id  for OID $oid";
+        return(undef);
     }
+    $id = $row[0];
 
     warn "no row id returned on row creation" unless $id;
     $sth->finish;
+    $sth2->finish;
 
     return $id;
 }
