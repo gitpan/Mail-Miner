@@ -3,7 +3,7 @@ package Mail::Miner;
 use 5.006;
 use strict;
 use warnings;
-our $VERSION = "1.0";
+our $VERSION = "1.01";
 
 use Mail::Miner::Message;
 use Mail::Miner::Attachment;
