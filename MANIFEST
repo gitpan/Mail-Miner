@@ -4,6 +4,7 @@ Makefile.PL
 MANIFEST
 SIGNATURE
 Miner/Asset.pm
+Miner/Assets.pm
 Miner/Attachment.pm
 Miner/Config.pm
 Miner/DBI.pm

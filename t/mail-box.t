@@ -16,8 +16,6 @@ use_ok('Mail::Miner');
 my $message = Mail::Box::Manager->new->open("test-message")->message(0);
 
 isa_ok($message,"Mail::Message");
-use Mail::Miner;
-use Data::Dumper;
 
 my @got = Mail::Miner::Assets->analyse(
     gethead => sub {$message->head},

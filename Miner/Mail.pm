@@ -9,8 +9,8 @@ use Mail::Miner::Attachment;
 use Mail::Miner;
 
 __PACKAGE__->set_up_table('messages');
-__PACKAGE__->has_many("assets", Mail::Miner::Asset => "message_id");
-__PACKAGE__->has_many("attachments", Mail::Miner::Attachment => "message_id");
+__PACKAGE__->has_many("assets", 'Mail::Miner::Asset' => "message_id");
+__PACKAGE__->has_many("attachments", 'Mail::Miner::Attachment' => "message_id");
 __PACKAGE__->has_a(
     content => 'MIME::Entity',
     inflate => sub { $Mail::Miner::parser->parse_data(shift) },

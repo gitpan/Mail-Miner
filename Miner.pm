@@ -6,16 +6,20 @@ use warnings;
 use Carp;
 
 #require Exporter;
-use Mail::Miner::DBI;
-use Mail::Miner::Attachment;
-use Mail::Miner::Asset;
-use Mail::Miner::Mail;
+use Mail::Miner::Assets;
+
+eval { 
+require Mail::Miner::DBI;
+require Mail::Miner::Attachment;
+require Mail::Miner::Asset;
+require Mail::Miner::Mail;
+};
 
 use MIME::Parser;
 
 #our @EXPORT_OK = ( );
 #our @EXPORT = qw( );
-our $VERSION = '2.2';
+our $VERSION = '2.3';
 
 # Find all Mail::Miner::Recogniser modules
 use File::Spec::Functions qw(:DEFAULT splitdir);
@@ -33,7 +37,7 @@ our @modules = map {
     s/.pm$//;
     s{.*(?=Mail/Miner)}{};
     join "::", splitdir($_)
-} @files;
+} grep defined, @files;
 
 our %plugins = map { $Mail::Miner::recognisers{$_}{keyword} => $_ } 
              keys %Mail::Miner::recognisers;

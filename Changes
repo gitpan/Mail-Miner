@@ -1,3 +1,34 @@
+2003-01-06 14:55  simon
+
+	* Miner/Assets.pm: [no log message]
+
+2003-01-06 14:54  simon
+
+	* MANIFEST, Miner.pm, t/mail-box.t: Further extract Miner and its
+	storage. Bump up to 2.3.
+
+2003-01-06 14:49  simon
+
+	* Miner/: Asset.pm, Assets.pm: Further separate storage from
+	mining.
+
+2003-01-04 00:13  simon
+
+	* Miner/Attachment.pm: ENOTMYDAY.
+
+2003-01-04 00:11  simon
+
+	* Miner/Attachment.pm: Oh that is *so* embarrassing.
+
+2003-01-02 08:39  simon
+
+	* Makefile.PL, Miner.pm, Miner/Mail.pm: Some fixes from Autrijus
+	Tang.
+
+2003-01-01 18:18  simon
+
+	* Changes, README: Oops.
+
 2003-01-01 18:17  simon
 
 	* Changes, Makefile.PL, Miner.pm, miner.sql, mm, mm_process,

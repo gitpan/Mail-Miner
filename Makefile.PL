@@ -9,6 +9,7 @@ WriteMakefile(
     'PREREQ_PM'		=> { Class::DBI::mysql => 0, 
                          Class::DBI => 0.90,
                          Lingua::EN::Keywords => 0,
+                         Date::PeriodParser => 0,
                          Mail::Address => 0,
                          MIME::Parser => 0
                        },

@@ -49,16 +49,16 @@ sub detach_attachments {
             push @body, @{$_->body};
         } else {
             my $att = $_->mime_type;
-            my $add = $object->add_to_attachments(
+            my $add = $object->add_to_attachments({
          filename => $fn,
          contenttype => $_->mime_type,
          encoding => ($_->bodyhandle && $_->bodyhandle->as_string)
-            );
+            });
 
             return $entity unless $add->id; # Just in case
             push @body, "\n", 
                 "[ ".$entity->mime_type." attachment $fn detached - use \n",
-                "\tmm --detach ".$att->id."\n",
+                "\tmm --detach ".$add->id."\n",
                 " to recover ]\n";
         }
     }
