@@ -1,9 +1,8 @@
-#!/usr/bin/perl -w
-
+use strict;
 package Mail::Miner::Recogniser::Keywords;
 use Lingua::EN::Keywords;
 
-$Mail::Miner::recognisers{"".__PACKAGE__} = 
+$Mail::Miner::recognisers{"".__PACKAGE__} =
     {
      title => "Keywords",
      help  => "Match messages containing the given keywords",

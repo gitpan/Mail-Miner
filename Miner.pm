@@ -8,7 +8,7 @@ use Carp;
 #require Exporter;
 use Mail::Miner::Assets;
 
-eval { 
+eval {
 require Mail::Miner::DBI;
 require Mail::Miner::Attachment;
 require Mail::Miner::Asset;
@@ -19,17 +19,27 @@ use MIME::Parser;
 
 #our @EXPORT_OK = ( );
 #our @EXPORT = qw( );
-our $VERSION = '2.5';
+our $VERSION = '2.6_01';
+our %recognisers;
 
 # Find all Mail::Miner::Recogniser modules
 use File::Spec::Functions qw(:DEFAULT splitdir);
 
-{ local $_=$_; # Breaking $_ considered evil
+sub import { 
+    my ($class, %args) = @_;
+    my @additional_modules = ($args{recognisers});
+    @additional_modules = @{$additional_modules[0]} 
+        if ref $additional_modules[0] eq "ARRAY";
+   s/::/\//g for @additional_modules;
+    local $_=$_; # Breaking $_ considered evil
 
 my @files = grep length, map { glob(catfile($_,"*.pm"))  }
-           grep { -d $_ }
-            map { catdir($_, "Mail", "Miner", "Recogniser") }
-            exists $INC{"blib.pm"} ? grep {/blib/} @INC : 
+            grep { -d $_ }
+            map { my $path = $_;
+                  catdir($path, "Mail", "Miner", "Recogniser"),
+                  map { catdir($path, $_) } @additional_modules
+            }
+            exists $INC{"blib.pm"} ? grep {/blib/} @INC :
             @INC;
 my %seen;
 @files = grep {!$seen{$_}++} @files;
@@ -38,15 +48,12 @@ my %seen;
 my @dummy = @files;
 for my $x (@dummy) {
     require $x; # No need for import.
-} 
-
-no warnings 'once';
-
-sub modules { sort keys %Mail::Miner::recognisers };
-
-sub plugins { map { $Mail::Miner::recognisers{$_}{keyword} => $_ } modules() };
+}
 
 }
+sub modules { sort keys %recognisers };
+
+sub plugins { map { $recognisers{$_}{keyword} => $_ } modules() };
 our $parser = new MIME::Parser;
 $parser->output_to_core(1);
 # Preloaded methods go here.
@@ -111,7 +118,7 @@ convenient to.
 Everything else that C<Mail::Miner> finds out about a mail is an
 B<asset>. For instance, a very trivial asset is the date it was sent. A
 more complex asset could be the fact that it looks like it contains a
-phone number, and what the phone number is. 
+phone number, and what the phone number is.
 
 =head2 Recognisers
 
