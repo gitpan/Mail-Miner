@@ -12,12 +12,15 @@ Miner/Mail.pm
 Miner.pm
 Miner/Recogniser/Address.pm
 Miner/Recogniser/Date.pm
+Miner/Recogniser/Entity.pm
 Miner/Recogniser/Keywords.pm
 Miner/Recogniser/Phone.pm
+Miner/Recogniser/Spam.pm
 miner.sql
 mm
 mm_process
 README
-t/assets.t
 test-message
+t/address.t
+t/assets.t
 t/mail-box.t

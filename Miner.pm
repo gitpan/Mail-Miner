@@ -19,29 +19,34 @@ use MIME::Parser;
 
 #our @EXPORT_OK = ( );
 #our @EXPORT = qw( );
-our $VERSION = '2.3';
+our $VERSION = '2.5';
 
 # Find all Mail::Miner::Recogniser modules
 use File::Spec::Functions qw(:DEFAULT splitdir);
 
-my @files = map { glob(catfile($_,"*.pm")) }
+{ local $_=$_; # Breaking $_ considered evil
+
+my @files = grep length, map { glob(catfile($_,"*.pm"))  }
            grep { -d $_ }
             map { catdir($_, "Mail", "Miner", "Recogniser") }
-            exists $INC{"blib.pm"} ? grep {/blib/} @INC : @INC;
+            exists $INC{"blib.pm"} ? grep {/blib/} @INC : 
+            @INC;
+my %seen;
+@files = grep {!$seen{$_}++} @files;
 
-require $_ for @files; # No need for import.
+
+my @dummy = @files;
+for my $x (@dummy) {
+    require $x; # No need for import.
+} 
 
 no warnings 'once';
 
-our @modules = map {
-    s/.pm$//;
-    s{.*(?=Mail/Miner)}{};
-    join "::", splitdir($_)
-} grep defined, @files;
+sub modules { sort keys %Mail::Miner::recognisers };
 
-our %plugins = map { $Mail::Miner::recognisers{$_}{keyword} => $_ } 
-             keys %Mail::Miner::recognisers;
+sub plugins { map { $Mail::Miner::recognisers{$_}{keyword} => $_ } modules() };
 
+}
 our $parser = new MIME::Parser;
 $parser->output_to_core(1);
 # Preloaded methods go here.

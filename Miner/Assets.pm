@@ -15,8 +15,11 @@ sub analyse {
     
     no strict 'refs'; 
     my @assets;
-    for my $module (@Mail::Miner::modules) {
-        push @assets, map { { asset => $_, creator => $module } }
+    for my $module (Mail::Miner->modules()) {
+        push @assets, map { 
+                        ref $_ eq "HASH" ? $_ :
+                        { asset => $_, creator => $module } 
+                      }
                         $module->process(%hash);
     }
 

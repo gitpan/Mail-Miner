@@ -28,6 +28,12 @@ procmailrc, or, if you're using Mail::Audit, by using
 Mail::Audit::Miner. (Included in this distribution.) See the
 documentation for that module for more details. 
 
+Next you'll need to ensure that you've set the MM_DATABASE, MM_USER and
+MM_PASSWORD environment variables. If MM_PASSWORD happens to start with
+a / or a . and a file of that name exists, the password will be read
+from a file; if it happens to be a directory, then the password will be
+read from $MM_PASSWORD/$MM_USER.
+
 DEPENDENCIES
 
 This module requires these other modules and libraries:
@@ -40,9 +46,17 @@ This module requires these other modules and libraries:
 
 SUPPORT
 
-This software is currently unsupported. It hasn't eaten my mailbox, but
-I don't want to say it won't eat yours. But I find it useful, and you
-might too.
+I've released this software because I find it useful, and I hope you
+might too. But I am a being of finite time and I'd like to spend more of
+it writing cool modules like this and less of it answering email, so
+please excuse me if the support isn't as great as you'd like.
+
+Nevertheless, there is a general discussion list for users of all my
+modules, to be found at
+http://lists.netthink.co.uk/listinfo/module-mayhem
+
+If you have a problem with this module, someone there will probably have
+it too.
 
 COPYRIGHT AND LICENCE
 

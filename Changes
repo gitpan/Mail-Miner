@@ -1,3 +1,113 @@
+2003-10-07 15:36  simon
+
+	* MANIFEST, Makefile.PL, Miner.pm, Miner/Recogniser/Entity.pm: Add
+	named-entity recognition, go with ExtUtils::AutoInstall. Crank out
+	new version.
+
+2003-09-24 12:28  simon
+
+	* Miner.pm, Miner/DBI.pm, t/assets.t, t/mail-box.t: * Fix tests *
+	Rewrite deprecated Class::DBI method autoupdate * Bump version
+
+2003-09-02 11:24  simon
+
+	* Miner.pm, Miner/Assets.pm: Allow recognisers to set their own
+	creator by returning a hashref.
+
+2003-03-18 13:17  simon
+
+	* Miner/Recogniser/Address.pm: OK, it was correct; I'm confused
+	now.
+
+2003-03-18 13:15  simon
+
+	* Miner/Recogniser/Address.pm: Don't know where that came from.
+
+2003-03-05 13:56  simon
+
+	* Miner.pm: Bump the version no.
+
+2003-03-05 13:55  simon
+
+	* Miner.pm, Miner/Assets.pm, Miner/Mail.pm: Make plugins dynamic,
+	not just computed when the module is loaded.  This means that other
+	recognisers can be added to the system after Mail::Miner has been
+	loaded.
+
+2003-03-03 13:27  simon
+
+	* Miner/Recogniser/Phone.pm, Miner/Recogniser/Spam.pm, t/assets.t,
+	t/mail-box.t: A much better phone recogniser.
+
+2003-02-26 14:04  simon
+
+	* Miner.pm, t/assets.t, t/mail-box.t: Change ordering of
+	recognisers, allow them to turn themselves off.
+
+2003-02-25 17:42  simon
+
+	* MANIFEST, t/address.t: Oops, address should be in there.
+
+2003-02-25 17:39  simon
+
+	* Miner/Recogniser/Address.pm: Limit size of address; make postcode
+	recognition more accurate.
+
+2003-02-17 16:07  simon
+
+	* test-message, Miner/Recogniser/Spam.pm: Honor existing spam
+	header.
+
+2003-02-17 16:00  simon
+
+	* MANIFEST, Miner/Recogniser/Spam.pm, t/assets.t, t/mail-box.t: A
+	spam tagger
+
+2003-02-10 19:02  simon
+
+	* Miner.pm: Don't break $_
+
+2003-02-10 18:35  simon
+
+	* Miner.pm, t/assets.t, t/mail-box.t: Fix a bunch of blecherous
+	bugs.
+
+2003-02-10 12:54  simon
+
+	* Miner.pm, Miner/Recogniser/Address.pm, Miner/Recogniser/Phone.pm:
+	Trim quoters from addresses.
+
+2003-02-04 16:39  simon
+
+	* Miner/Recogniser/Phone.pm: \b bug found by Karen.
+
+2003-01-27 11:29  simon
+
+	* Miner/Recogniser/Phone.pm: Radical new ideas from Marty and
+	Karen!
+
+2003-01-27 11:00  simon
+
+	* Miner/Recogniser/Phone.pm: Improves support for NI numbers.
+
+2003-01-19 21:38  simon
+
+	* README: Advertise module-mayhem.
+
+2003-01-19 21:35  simon
+
+	* Makefile.PL, README, Miner/Config.pm: Configuration patch from
+	Aaron Straup Cope <asc@vineyard.net>
+
+2003-01-06 18:23  simon
+
+	* Miner.pm: This fixes a very, very weird bug with $_ being
+	undef'ed.
+
+2003-01-06 14:56  simon
+
+	* Changes: Done 2.3.
+
 2003-01-06 14:55  simon
 
 	* Miner/Assets.pm: [no log message]

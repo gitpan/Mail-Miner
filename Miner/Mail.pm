@@ -94,19 +94,20 @@ sub select {
     my $it = %search ? $class->search_like(%search) : $class->retrieve_all;
     
     my @rv;
+    my %plugins = Mail::Miner->plugins();
 
     MAILS: while (my $mail = $it->next) {
         my @assets = $mail->assets;
         next unless @assets;
         for my $opt (keys %options) {
-            die "Unknown search term $opt (".(join ",", keys %Mail::Miner::plugins).")\n"
-                unless $Mail::Miner::plugins{$opt};
+            die "Unknown search term $opt (".(join ",", keys %plugins).")\n"
+                unless $plugins{$opt};
             my $term = $options{$opt};
-            my @relevant_assets = grep {$_->creator eq $Mail::Miner::plugins{$opt}} @assets;
+            my @relevant_assets = grep {$_->creator eq $plugins{$opt}} @assets;
 
             # Do we have a specialised search engine for this plugin?
             no strict 'refs';
-            if (defined (my $search = *{$Mail::Miner::plugins{$opt}."::search"}{CODE})) {
+            if (defined (my $search = *{$plugins{$opt}."::search"}{CODE})) {
                 next MAILS 
                  unless $search->($mail, $term, @relevant_assets);
             }
@@ -133,7 +134,8 @@ sub display_verbose {
 
 sub display_summary { 
     my ($class, $rr, @objs) = @_;
-    my %options = map { $Mail::Miner::plugins{$_} => 1 } @$rr;
+    my %plugins = Mail::Miner->plugins;
+    my %options = map { $plugins{$_} => 1 } @$rr;
     if (!@objs) {
         print "No messages matched.\n"; return;
     }

@@ -26,76 +26,28 @@ Austin Group Chair                          Apex Plaza,Forbury Road,
 Email: a.josey@opengroup.org                Reading,Berks.RG1 1AX,England'
           },
           {
-            'creator' => 'Mail::Miner::Recogniser::Keywords',
-            'asset' => 'error'
-          },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Keywords',
-            'asset' => 'errno'
-          },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Keywords',
-            'asset' => 'domain'
-          },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Keywords',
-            'asset' => 'range'
-          },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Keywords',
-            'asset' => 'mode'
+            'creator' => 'Mail::Miner::Recogniser::Phone',
+            'asset' => '+44 118 9508311 ext 2250'
           },
           {
             'creator' => 'Mail::Miner::Recogniser::Phone',
-            'asset' => '44 118 9508311'
+            'asset' => '+44 118 9500110'
           },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Phone',
-            'asset' => '44 118 9500110'
-          },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Address',
-            'asset' => 'Andrew Josey                                The Open Group  
-Austin Group Chair                          Apex Plaza,Forbury Road,
-Email: a.josey@opengroup.org                Reading,Berks.RG1 1AX,England'
-          },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Keywords',
-            'asset' => 'error'
-          },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Keywords',
-            'asset' => 'errno'
-          },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Keywords',
-            'asset' => 'domain'
-          },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Keywords',
-            'asset' => 'range'
-          },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Keywords',
-            'asset' => 'mode'
-          },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Phone',
-            'asset' => '44 118 9508311'
-          },
-          {
-            'creator' => 'Mail::Miner::Recogniser::Phone',
-            'asset' => '44 118 9500110'
-          }
 );
 
-ok(eq_set(\@got, \@expected), "Correct assets with MIME::Entity");
+is_deeply(
+          [grep {$_->{creator} !~ /Keyword|Spam/} @got],
+# Keyword algorithm changes
+# Spam is optional
+          \@expected, "Correct assets with MIME::Entity");
 
 Mail::Miner::Assets->analyse(
     gethead => sub {$message->head->as_string},
     getbody => sub {$message->bodyhandle->as_string},
     store   => sub {ok(1, "Store passes us stuff");
-                    ok(eq_set(\@_, \@expected), 
+ok(eq_set([grep {$_->{creator} !~ /Keyword|Spam/} # Keyword algorithm changes
+                                                  # Spam is optional
+           @_], \@expected), 
                     "Store passes us accurate stuff");}
             
     );
