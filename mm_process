@@ -1,0 +1,12 @@
+#!/usr/bin/perl
+
+use Mail::Miner::Message;
+use MIME::Parser;
+
+my $parser = new MIME::Parser;
+$parser->output_to_core(1);
+
+my $entity = $parser->parse(\*STDIN);
+$entity = Mail::Miner::Message::process($entity);
+print $entity->as_string;
+

@@ -1,0 +1,6 @@
+Revision history for Perl extension Mail::Miner.
+
+0.01  Mon Apr  8 18:43:58 2002
+	- original version; created by h2xs 1.21 with options
+		-XA -n Mail::Miner
+
