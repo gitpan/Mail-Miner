@@ -20,5 +20,4 @@ create table assets (
     message_id integer NOT NULL,
     creator varchar(30),
     asset LONGTEXT,
-    PRIMARY KEY (message_id)
 );

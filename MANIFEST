@@ -6,6 +6,7 @@ Miner/Assets.pm
 Miner/Attachment.pm
 Miner/DBI.pm
 Miner/Message.pm
+Miner/Recogniser/Keywords.pm
 Miner.pm
 miner.sql
 mm

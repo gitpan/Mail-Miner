@@ -3,11 +3,33 @@ package Mail::Miner;
 use 5.006;
 use strict;
 use warnings;
-our $VERSION = "0.0a1";
+our $VERSION = "0.0a3";
 
 use Mail::Miner::Message;
 use Mail::Miner::Attachment;
 use Mail::Miner::Assets;
+
+our %allowed_options;
+
+$allowed_options{sender} = "";
+
+# Find all Mail::Miner::Recogniser modules
+use File::Spec::Functions qw(:DEFAULT splitdir);
+
+my @files = map { glob(catfile($_,"*.pm")) }
+           grep { -d $_ } 
+            map { catdir($_, "Mail", "Miner", "Recogniser") }
+            @INC;
+
+require $_ for @files; # No need for import.
+
+no warnings 'once';
+
+our @modules = map { 
+    s/.pm$//;
+    s{.*(?=Mail/Miner)}{};
+    join "::", splitdir($_)
+} @files;
 
 1;
 

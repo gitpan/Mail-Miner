@@ -4,8 +4,11 @@ use Exporter;
 our @ISA = qw(Exporter);
 our @EXPORT = qw(dbh Insert);
 
-my $connection_string = "dbi:mysql:dbname=mailminer";
-my ($user, $auth) = ();
+# Fucking hack.
+my $who = getpwuid $>;
+my $connection_string = "dbi:mysql:dbname=mail".($who eq "simon" && "miner");
+my ($user, $auth);
+($user, $auth) = ('gnat', 'waldus') unless $who eq "simon";
 
 =head1 NAME
 
@@ -52,6 +55,9 @@ sub Insert {
         @_
     );
 
+    # XXX This is horribly mysql specific. Write a DBIx module to
+    # abstract it. DBIx::SearchBuilder::Handle has solutions for Oracle,
+    # mysql and Postgres.
     my $id = dbh->{'mysql_insertid'};
 
     unless ($id) {
